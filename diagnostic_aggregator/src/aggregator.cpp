@@ -17,6 +17,7 @@
 #include <memory>
 #include "rclcpp/node.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp/node_options.hpp"
 #include "diagnostic_aggregator/aggregator.hpp"
 
 //  using namespace std;
@@ -41,13 +42,15 @@ diagnostic_aggregator::Aggregator::Aggregator()
   } else {
     base_path_ = "/";
   }
-
-  nh = std::make_shared<rclcpp::Node>("analyzers", "/", context, arguments,
-      initial_values, use_global_arguments,
-      use_intra_process);
+  auto options = rclcpp::NodeOptions()
+    .use_intra_process_comms(use_intra_process)
+    .use_global_arguments(use_global_arguments)
+    .context(context)
+    .arguments(arguments)
+    .initial_parameters(initial_values);
+  nh = std::make_shared<rclcpp::Node>("analyzers", "/", options);
   nh_an = std::make_shared<rclcpp::Node>(
-    "diagnostic_aggregator", "/", context, arguments, initial_values,
-    use_global_arguments, use_intra_process);
+    "diagnostic_aggregator", "/", options);
   //  Listing parameter using syncronous paramter serrvice
   auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(nh);
   using namespace std::chrono_literals;
