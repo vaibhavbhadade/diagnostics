@@ -36,11 +36,15 @@ void v_TEST()
   };
   const bool use_global_arguments = true;
   const bool use_intra_process = true;
-
+  auto options = rclcpp::NodeOptions()
+    .use_intra_process_comms(use_intra_process)
+    .use_global_arguments(use_global_arguments)
+    .context(context)
+    .arguments(arguments)
+    .initial_parameters(initial_values);
   //  ros::NodeHandle nh = ros::NodeHandle("~");
   auto nh = std::make_shared<rclcpp::Node>(
-    "analyzer_loader", "/", context, arguments, initial_values,
-    use_global_arguments, use_intra_process);
+    "analyzer_loader", "/", options);
 
   diagnostic_aggregator::AnalyzerGroup analyzer_group;
   std::string path = "base_path";
